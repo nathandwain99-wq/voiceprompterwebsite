@@ -1,205 +1,559 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VoicePrompter | Speak Naturally. Stay on Track.</title>
-    <meta name="description" content="VoicePrompter is a voice-controlled teleprompter that follows your speech automatically.">
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        html {
-            scroll-behavior: smooth;
-        }
+<title>VoicePrompter | Speak Naturally. Stay on Track.</title>
 
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background: #070914;
-            color: #f5f7ff;
-            line-height: 1.6;
-        }
+<meta name="description" content="VoicePrompter is a voice-controlled teleprompter that follows your speech automatically.">
+<meta name="theme-color" content="#070914">
 
-        a {
-            color: inherit;
-            text-decoration: none;
-        }
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
-        .nav {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            background: rgba(7, 9, 20, 0.9);
-            backdrop-filter: blur(14px);
-            border-bottom: 1px solid rgba(255,255,255,0.08);
-        }
+html {
+    scroll-behavior: smooth;
+}
 
-        .nav-inner {
-            max-width: 1150px;
-            margin: auto;
-            padding: 18px 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
+body {
+    font-family: Inter, Arial, Helvetica, sans-serif;
+    background: #070914;
+    color: #f5f7ff;
+    line-height: 1.6;
+    overflow-x: hidden;
+}
 
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 21px;
-            font-weight: 800;
-        }
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(circle at 15% 15%, rgba(0,234,255,.08), transparent 30%),
+        radial-gradient(circle at 85% 30%, rgba(139,92,246,.08), transparent 30%);
+    z-index: -1;
+}
 
-        .brand-mark {
-            width: 38px;
-            height: 38px;
-            border-radius: 11px;
-            display: grid;
-            place-items: center;
-            background: linear-gradient(135deg, #00eaff, #8b5cf6);
-            color: #070914;
-            font-size: 20px;
-            box-shadow: 0 0 25px rgba(0,234,255,0.25);
-        }
+a {
+    color: inherit;
+    text-decoration: none;
+}
 
-        .nav-links {
-            display: flex;
-            gap: 26px;
-            align-items: center;
-            color: #b8bfd5;
-            font-size: 14px;
-        }
+.nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(7,9,20,.82);
+    backdrop-filter: blur(18px);
+    border-bottom: 1px solid rgba(255,255,255,.08);
+}
 
-        .nav-links a:hover {
-            color: white;
-        }
+.nav-inner {
+    max-width: 1150px;
+    margin: auto;
+    padding: 17px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
 
-        .hero {
-            max-width: 1150px;
-            margin: auto;
-            padding: 105px 24px 95px;
-            display: grid;
-            grid-template-columns: 1.1fr 0.9fr;
-            gap: 70px;
-            align-items: center;
-        }
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 21px;
+    font-weight: 800;
+}
 
-        .eyebrow {
-            color: #00eaff;
-            font-size: 13px;
-            font-weight: 800;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 18px;
-        }
+.brand-mark {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(135deg,#00eaff,#8b5cf6);
+    color: #070914;
+    font-size: 20px;
+    box-shadow: 0 0 28px rgba(0,234,255,.25);
+}
 
-        h1 {
-            font-size: clamp(48px, 6vw, 76px);
-            line-height: 0.98;
-            letter-spacing: -3px;
-            margin-bottom: 25px;
-        }
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    color: #b8bfd5;
+    font-size: 14px;
+}
 
-        .gradient {
-            background: linear-gradient(90deg, #00eaff, #a855f7);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
+.nav-links a:hover {
+    color: white;
+}
 
-        .hero p {
-            color: #aeb5ca;
-            font-size: 19px;
-            max-width: 650px;
-            margin-bottom: 32px;
-        }
+.hero {
+    max-width: 1150px;
+    margin: auto;
+    min-height: 720px;
+    padding: 100px 24px 90px;
+    display: grid;
+    grid-template-columns: 1.05fr .95fr;
+    gap: 70px;
+    align-items: center;
+}
 
-        .buttons {
-            display: flex;
-            gap: 14px;
-            flex-wrap: wrap;
-        }
+.eyebrow {
+    color: #00eaff;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+}
 
-        .button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 52px;
-            padding: 0 25px;
-            border-radius: 12px;
-            font-weight: 800;
-            font-size: 15px;
-            transition: transform .2s, box-shadow .2s;
-        }
+h1 {
+    font-size: clamp(50px,6vw,78px);
+    line-height: .98;
+    letter-spacing: -4px;
+    margin-bottom: 26px;
+}
 
-        .button:hover {
-            transform: translateY(-2px);
-        }
+.gradient {
+    background: linear-gradient(90deg,#00eaff,#a855f7);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
 
-        .primary {
-            background: linear-gradient(90deg, #00d9f5, #8b5cf6);
-            color: #050711;
-            box-shadow: 0 12px 35px rgba(0,210,245,0.2);
-        }
+.hero p {
+    color: #aeb5ca;
+    font-size: 19px;
+    max-width: 620px;
+    margin-bottom: 32px;
+}
 
-        .secondary {
-            border: 1px solid rgba(255,255,255,0.15);
-            background: rgba(255,255,255,0.04);
-            color: white;
-        }
+.buttons {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+}
 
-        .app-card {
-            min-height: 390px;
-            border-radius: 28px;
-            border: 1px solid rgba(0,234,255,0.18);
-            background:
-                radial-gradient(circle at 30% 20%, rgba(0,234,255,.12), transparent 35%),
-                radial-gradient(circle at 80% 80%, rgba(139,92,246,.16), transparent 40%),
-                #0d1020;
-            box-shadow: 0 30px 80px rgba(0,0,0,.45);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 45px;
-            position: relative;
-            overflow: hidden;
-        }
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 54px;
+    padding: 0 26px;
+    border-radius: 13px;
+    font-weight: 800;
+    font-size: 15px;
+    transition: .2s ease;
+}
 
-        .screen {
-            width: 100%;
-            border: 1px solid rgba(255,255,255,.12);
-            border-radius: 16px;
-            background: #080b16;
-            padding: 25px;
-            box-shadow: 0 15px 50px rgba(0,0,0,.5);
-        }
+.button:hover {
+    transform: translateY(-3px);
+}
 
-        .screen-top {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 25px;
-            color: #78809a;
-            font-size: 12px;
-        }
+.primary {
+    background: linear-gradient(90deg,#00d9f5,#8b5cf6);
+    color: #050711;
+    box-shadow: 0 15px 40px rgba(0,210,245,.2);
+}
 
-        .screen-text {
-            font-size: 25px;
-            line-height: 1.5;
-            color: #eef1ff;
-        }
+.secondary {
+    border: 1px solid rgba(255,255,255,.14);
+    background: rgba(255,255,255,.04);
+    color: white;
+}
 
-        .screen-text span {
-            color: #00eaff;
-        }
+.app-card {
+    min-height: 430px;
+    border-radius: 30px;
+    border: 1px solid rgba(0,234,255,.18);
+    background:
+        radial-gradient(circle at 25% 20%,rgba(0,234,255,.13),transparent 35%),
+        radial-gradient(circle at 80% 80%,rgba(139,92,246,.18),transparent 42%),
+        #0d1020;
+    box-shadow: 0 35px 90px rgba(0,0,0,.48);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 42px;
+    position: relative;
+    overflow: hidden;
+}
 
-        .voice-dot {
-            display: inline-block;
-            width: 9px;
-            height: 9px;
-            background: #00eaff;
-            border-radius: 50%;
-            margin-right: 
+.app-card::before {
+    content: "";
+    position: absolute;
+    width: 260px;
+    height: 260px;
+    border-radius: 50%;
+    background: rgba(0,234,255,.08);
+    filter: blur(70px);
+}
+
+.screen {
+    width: 100%;
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 18px;
+    background: #080b16;
+    padding: 25px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.55);
+    position: relative;
+    z-index: 1;
+}
+
+.screen-top {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    color: #78809a;
+    font-size: 12px;
+}
+
+.status {
+    color: #00eaff;
+}
+
+.screen-text {
+    font-size: 25px;
+    line-height: 1.5;
+    color: #eef1ff;
+}
+
+.screen-text .active {
+    display: inline;
+    color: #00eaff;
+    text-shadow: 0 0 20px rgba(0,234,255,.35);
+}
+
+.voice-dot {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    background: #00eaff;
+    border-radius: 50%;
+    margin-right: 7px;
+    box-shadow: 0 0 14px #00eaff;
+}
+
+section {
+    max-width: 1150px;
+    margin: auto;
+    padding: 95px 24px;
+}
+
+.section-heading {
+    text-align: center;
+    max-width: 700px;
+    margin: auto auto 55px;
+}
+
+.section-heading h2 {
+    font-size: clamp(34px,5vw,52px);
+    line-height: 1.05;
+    margin-bottom: 18px;
+}
+
+.section-heading p {
+    color: #9fa7bd;
+    font-size: 17px;
+}
+
+.features {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 20px;
+}
+
+.feature {
+    padding: 30px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,.08);
+    background: rgba(255,255,255,.035);
+    transition: .2s ease;
+}
+
+.feature:hover {
+    transform: translateY(-5px);
+    border-color: rgba(0,234,255,.25);
+}
+
+.feature-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg,rgba(0,234,255,.16),rgba(139,92,246,.18));
+    font-size: 22px;
+}
+
+.feature h3 {
+    margin-bottom: 10px;
+    font-size: 20px;
+}
+
+.feature p {
+    color: #9fa7bd;
+    font-size: 15px;
+}
+
+.demo {
+    max-width: 900px;
+    margin: auto;
+    border-radius: 26px;
+    border: 1px solid rgba(0,234,255,.15);
+    background:
+        radial-gradient(circle at 50% 0%,rgba(0,234,255,.1),transparent 45%),
+        #0c0f1d;
+    padding: 55px;
+    text-align: center;
+    box-shadow: 0 30px 80px rgba(0,0,0,.4);
+}
+
+.demo h2 {
+    font-size: 42px;
+    margin-bottom: 15px;
+}
+
+.demo p {
+    color: #aeb5ca;
+    margin-bottom: 28px;
+}
+
+.cta {
+    text-align: center;
+    padding-top: 50px;
+    padding-bottom: 110px;
+}
+
+.cta h2 {
+    font-size: clamp(38px,5vw,58px);
+    margin-bottom: 18px;
+}
+
+.cta p {
+    color: #aeb5ca;
+    margin-bottom: 30px;
+}
+
+footer {
+    border-top: 1px solid rgba(255,255,255,.07);
+    padding: 30px 24px;
+    color: #707890;
+    font-size: 13px;
+}
+
+.footer-inner {
+    max-width: 1150px;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+@media (max-width: 850px) {
+    .nav-links {
+        display: none;
+    }
+
+    .hero {
+        grid-template-columns: 1fr;
+        padding-top: 70px;
+    }
+
+    .features {
+        grid-template-columns: 1fr;
+    }
+
+    .app-card {
+        min-height: 340px;
+    }
+}
+
+@media (max-width: 550px) {
+    h1 {
+        letter-spacing: -2px;
+    }
+
+    .hero {
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+
+    .app-card {
+        padding: 20px;
+    }
+
+    .screen-text {
+        font-size: 20px;
+    }
+
+    .demo {
+        padding: 35px 22px;
+    }
+
+    .footer-inner {
+        flex-direction: column;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<nav class="nav">
+    <div class="nav-inner">
+        <a href="#" class="brand">
+            <span class="brand-mark">🎙</span>
+            <span>VoicePrompter</span>
+        </a>
+
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#how">How It Works</a>
+            <a href="#download">Get VoicePrompter</a>
+        </div>
+    </div>
+</nav>
+
+<main>
+
+<section class="hero">
+
+    <div>
+        <div class="eyebrow">Voice-powered teleprompter</div>
+
+        <h1>
+            Speak naturally.<br>
+            <span class="gradient">Stay on track.</span>
+        </h1>
+
+        <p>
+            VoicePrompter follows your speech automatically, keeping your script moving while you focus on what actually matters: talking to people instead of chasing text.
+        </p>
+
+        <div class="buttons">
+            <a href="#download" class="button primary">Get VoicePrompter</a>
+            <a href="#features" class="button secondary">See How It Works</a>
+        </div>
+    </div>
+
+    <div class="app-card">
+
+        <div class="screen">
+
+            <div class="screen-top">
+                <span>VOICEPROMPTER</span>
+                <span class="status">
+                    <span class="voice-dot"></span>Listening
+                </span>
+            </div>
+
+            <div class="screen-text">
+                Your words move the script<br>
+                forward automatically.<br><br>
+
+                <span class="active">
+                    Just speak naturally...
+                </span>
+                <br><br>
+
+                VoicePrompter keeps you<br>
+                right where you need to be.
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<section id="features">
+
+    <div class="section-heading">
+        <h2>Built for people who have something to say.</h2>
+        <p>
+            No awkward scrolling. No losing your place. No staring at a wall of text while trying to sound human.
+        </p>
+    </div>
+
+    <div class="features">
+
+        <div class="feature">
+            <div class="feature-icon">🎙️</div>
+            <h3>Voice Tracking</h3>
+            <p>
+                Your speech controls the script. As you talk, VoicePrompter follows along automatically.
+            </p>
+        </div>
+
+        <div class="feature">
+            <div class="feature-icon">⚡</div>
+            <h3>Stay in the Flow</h3>
+            <p>
+                Keep your eyes where they belong and concentrate on delivering your message naturally.
+            </p>
+        </div>
+
+        <div class="feature">
+            <div class="feature-icon">🧠</div>
+            <h3>Less Distraction</h3>
+            <p>
+                Stop manually scrolling and let the software handle the mechanical stuff.
+            </p>
+        </div>
+
+    </div>
+
+</section>
+
+<section id="how">
+
+    <div class="demo">
+
+        <h2>How it works</h2>
+
+        <p>
+            Load your script. Start speaking. VoicePrompter listens and keeps the text moving with you.
+        </p>
+
+        <a href="#download" class="button primary">
+            Try VoicePrompter
+        </a>
+
+    </div>
+
+</section>
+
+<section id="download" class="cta">
+
+    <h2>Ready to stop losing your place?</h2>
+
+    <p>
+        VoicePrompter keeps your words moving so you can focus on delivering them.
+    </p>
+
+    <a href="#" class="button primary">
+        Get VoicePrompter
+    </a>
+
+</section>
+
+</main>
+
+<footer>
+    <div class="footer-inner">
+        <span>© 2026 VoicePrompter</span>
+        <span>Speak naturally. Stay on track.</span>
+    </div>
+</footer>
+
+</body>
+</html>
