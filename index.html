@@ -169,6 +169,12 @@ h1 {
     color: white;
 }
 
+.free-button {
+    border: 1px solid rgba(0,234,255,.35);
+    background: rgba(0,234,255,.07);
+    color: #00eaff;
+}
+
 .app-card {
     min-height: 430px;
     border-radius: 30px;
@@ -304,6 +310,70 @@ section {
     font-size: 15px;
 }
 
+.download-section {
+    max-width: 1000px;
+    margin: auto;
+    padding: 40px 24px 100px;
+}
+
+.download-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.download-card {
+    padding: 38px;
+    border-radius: 24px;
+    border: 1px solid rgba(255,255,255,.1);
+    background: rgba(255,255,255,.035);
+    text-align: center;
+}
+
+.download-card.pro {
+    border-color: rgba(139,92,246,.3);
+}
+
+.download-card.free {
+    border-color: rgba(0,234,255,.3);
+}
+
+.download-card .icon {
+    font-size: 42px;
+    margin-bottom: 15px;
+}
+
+.download-card h3 {
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+.download-card p {
+    color: #9fa7bd;
+    margin-bottom: 25px;
+}
+
+.badge {
+    display: inline-block;
+    margin-bottom: 18px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.free .badge {
+    color: #00eaff;
+    background: rgba(0,234,255,.1);
+}
+
+.pro .badge {
+    color: #c4a5ff;
+    background: rgba(139,92,246,.12);
+}
+
 .demo {
     max-width: 900px;
     margin: auto;
@@ -368,7 +438,8 @@ footer {
         padding-top: 70px;
     }
 
-    .features {
+    .features,
+    .download-grid {
         grid-template-columns: 1fr;
     }
 
@@ -418,7 +489,8 @@ footer {
         <div class="nav-links">
             <a href="#features">Features</a>
             <a href="#how">How It Works</a>
-            <a href="https://buy.stripe.com/4gMfZh8Sgdkwf7z3KtbAs00">Get VoicePrompter</a>
+            <a href="#download">Download</a>
+            <a href="https://buy.stripe.com/4gMfZh8Sgdkwf7z3KtbAs00">Get Pro</a>
         </div>
     </div>
 </nav>
@@ -440,8 +512,8 @@ footer {
         </p>
 
         <div class="buttons">
-            <a href="https://buy.stripe.com/4gMfZh8Sgdkwf7z3KtbAs00" class="button primary">Get VoicePrompter</a>
-            <a href="#features" class="button secondary">See How It Works</a>
+            <a href="#download" class="button primary">Download Free</a>
+            <a href="https://buy.stripe.com/4gMfZh8Sgdkwf7z3KtbAs00" class="button secondary">Get Pro</a>
         </div>
     </div>
 
@@ -524,15 +596,70 @@ footer {
             Load your script. Start speaking. VoicePrompter listens and keeps the text moving with you.
         </p>
 
-        <a href="https://buy.stripe.com/4gMfZh8Sgdkwf7z3KtbAs00" class="button primary">
-            Try VoicePrompter
+        <a href="#download" class="button primary">
+            Download Free
         </a>
 
     </div>
 
 </section>
 
-<section id="download" class="cta">
+<section id="download" class="download-section">
+
+    <div class="section-heading">
+        <h2>Choose your VoicePrompter</h2>
+        <p>
+            Start free or unlock the Pro experience.
+        </p>
+    </div>
+
+    <div class="download-grid">
+
+        <div class="download-card free">
+
+            <div class="icon">🎙️</div>
+
+            <span class="badge">Free</span>
+
+            <h3>VoicePrompter Free</h3>
+
+            <p>
+                Get started with voice-controlled scrolling and built-in speech recognition.
+            </p>
+
+            <a
+                href="https://github.com/nathandwain99-wq/voiceprompterwebsite/releases/download/v1.0.0-free/VoicePrompter_Free_Setup.exe"
+                class="button free-button">
+                Download Free
+            </a>
+
+        </div>
+
+        <div class="download-card pro">
+
+            <div class="icon">⚡</div>
+
+            <span class="badge">Pro</span>
+
+            <h3>VoicePrompter Pro</h3>
+
+            <p>
+                Unlock the Pro version of VoicePrompter for Windows.
+            </p>
+
+            <a
+                href="https://buy.stripe.com/4gMfZh8Sgdkwf7z3KtbAs00"
+                class="button primary">
+                Get VoicePrompter Pro
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+<section class="cta">
 
     <h2>Ready to stop losing your place?</h2>
 
@@ -540,8 +667,21 @@ footer {
         VoicePrompter keeps your words moving so you can focus on delivering them.
     </p>
 
-    <a href="https://buy.stripe.com/4gMfZh8Sgdkwf7z3KtbAs00" class="button primary">Get VoicePrompter
-    </a>
+    <div class="buttons" style="justify-content:center;">
+
+        <a
+            href="https://github.com/nathandwain99-wq/voiceprompterwebsite/releases/download/v1.0.0-free/VoicePrompter_Free_Setup.exe"
+            class="button free-button">
+            Download Free
+        </a>
+
+        <a
+            href="https://buy.stripe.com/4gMfZh8Sgdkwf7z3KtbAs00"
+            class="button primary">
+            Get Pro
+        </a>
+
+    </div>
 
 </section>
 
@@ -556,7 +696,3 @@ footer {
 
 </body>
 </html>
-
-<!-- VoicePrompter deployment refresh -->
-
-
