@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#080b14">
+
 <title>VoicePrompter Online</title>
 
 <style>
@@ -11,7 +12,8 @@
     box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
     margin: 0;
     padding: 0;
     width: 100%;
@@ -32,16 +34,15 @@ body {
 }
 
 .logo {
-    font-size: 25px;
+    font-size: 26px;
     font-weight: 800;
-    letter-spacing: -.5px;
 }
 
-.logo span:first-child {
+.logo .voice {
     color: #4fdcff;
 }
 
-.logo span:last-child {
+.logo .prompter {
     color: #a970ff;
 }
 
@@ -53,11 +54,13 @@ body {
 
 .setup {
     padding: 18px;
+    max-width: 800px;
+    margin: auto;
 }
 
 textarea {
     width: 100%;
-    min-height: 260px;
+    min-height: 280px;
     resize: vertical;
     padding: 18px;
     border-radius: 16px;
@@ -100,6 +103,22 @@ button {
     border: 1px solid #30394f;
 }
 
+.voice-button {
+    margin-top: 12px;
+    width: 100%;
+}
+
+.status {
+    margin-top: 15px;
+    padding: 13px;
+    border-radius: 12px;
+    background: #111624;
+    border: 1px solid #293148;
+    color: #aeb8cd;
+    text-align: center;
+    font-size: 14px;
+}
+
 .speed {
     margin-top: 16px;
     padding: 15px;
@@ -119,7 +138,9 @@ input[type="range"] {
     width: 100%;
 }
 
-.prompter {
+/* PROMPTER */
+
+.prompter-screen {
     display: none;
     position: fixed;
     inset: 0;
@@ -128,7 +149,7 @@ input[type="range"] {
     flex-direction: column;
 }
 
-.prompter.active {
+.prompter-screen.active {
     display: flex;
 }
 
@@ -161,13 +182,26 @@ input[type="range"] {
 .script {
     position: absolute;
     width: 100%;
-    padding: 45vh 8% 60vh;
+    padding: 42vh 7% 60vh;
     text-align: center;
     font-size: 42px;
-    line-height: 1.65;
+    line-height: 1.6;
     font-weight: 700;
-    white-space: pre-wrap;
-    transform: translateY(0);
+}
+
+.word {
+    display: inline;
+}
+
+.word.active {
+    color: #ffffff;
+    text-shadow:
+        0 0 8px #4fdcff,
+        0 0 20px #4fdcff;
+}
+
+.word.done {
+    color: #68748c;
 }
 
 .center-line {
@@ -183,7 +217,8 @@ input[type="range"] {
 }
 
 .prompt-controls {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
     gap: 8px;
     padding: 10px;
     background: #0b0f19;
@@ -191,7 +226,27 @@ input[type="range"] {
 }
 
 .prompt-controls button {
-    flex: 1;
+    padding: 12px 8px;
+}
+
+.voice-status {
+    position: absolute;
+    top: 62px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(10,15,25,.92);
+    border: 1px solid #30394f;
+    border-radius: 20px;
+    padding: 8px 15px;
+    color: #b9c4da;
+    font-size: 13px;
+    z-index: 5;
+    white-space: nowrap;
+}
+
+.voice-status.listening {
+    color: #4fdcff;
+    border-color: #4fdcff;
 }
 
 @media (max-width: 600px) {
@@ -214,19 +269,37 @@ input[type="range"] {
 
 <header class="header">
     <div class="logo">
-        <span>Voice</span><span>Prompter</span>
+        <span class="voice">Voice</span><span class="prompter">Prompter</span>
     </div>
-    <div class="subtitle">Teleprompter Online</div>
+
+    <div class="subtitle">
+        Voice-Traced Teleprompter
+    </div>
 </header>
 
 <main class="setup">
 
-    <textarea id="scriptInput" placeholder="Paste or type your script here..."></textarea>
+    <textarea
+        id="scriptInput"
+        placeholder="Paste or type your script here..."
+    ></textarea>
 
     <div class="controls">
-        <button class="primary" onclick="startPrompter()">Start Prompter</button>
-        <button class="secondary" onclick="clearScript()">Clear</button>
+        <button class="primary" onclick="startPrompter()">
+            Start Prompter
+        </button>
+
+        <button class="secondary" onclick="clearScript()">
+            Clear
+        </button>
     </div>
+
+    <button
+        class="primary voice-button"
+        onclick="testMicrophone()"
+    >
+        🎙 Test Voice Tracking
+    </button>
 
     <div class="speed">
         <label>
@@ -244,118 +317,738 @@ input[type="range"] {
         >
     </div>
 
-</main>
-
-<section id="prompter" class="prompter">
-
-    <div class="prompt-header">
-        <div class="prompt-title">VoicePrompter</div>
-        <button class="close" onclick="closePrompter()">Exit</button>
+    <div id="status" class="status">
+        Voice tracking is ready.
     </div>
 
-    <div class="script-window" id="scriptWindow">
-        <div class="script" id="scriptDisplay"></div>
+</main>
+
+<section
+    id="prompterScreen"
+    class="prompter-screen"
+>
+
+    <div class="prompt-header">
+
+        <div class="prompt-title">
+            VoicePrompter
+        </div>
+
+        <button
+            class="close"
+            onclick="closePrompter()"
+        >
+            Exit
+        </button>
+
+    </div>
+
+    <div
+        id="voiceStatus"
+        class="voice-status"
+    >
+        Microphone off
+    </div>
+
+    <div
+        id="scriptWindow"
+        class="script-window"
+    >
+
+        <div
+            id="scriptDisplay"
+            class="script"
+        ></div>
+
         <div class="center-line"></div>
+
     </div>
 
     <div class="prompt-controls">
-        <button class="secondary" onclick="toggleScroll()" id="playButton">
-            ▶ Start
+
+        <button
+            class="secondary"
+            onclick="startVoiceTracking()"
+        >
+            🎙 Voice
         </button>
 
-        <button class="secondary" onclick="restartScroll()">
+        <button
+            class="secondary"
+            onclick="toggleScroll()"
+            id="playButton"
+        >
+            ▶ Scroll
+        </button>
+
+        <button
+            class="secondary"
+            onclick="restartScroll()"
+        >
             ↻ Restart
         </button>
+
     </div>
 
 </section>
 
 <script>
+let words = [];
+let currentWord = 0;
+
+let recognition = null;
+let listening = false;
+
 let scrollPosition = 0;
 let scrolling = false;
 let animationFrame = null;
+
 let speed = 2;
 
-const input = document.getElementById("scriptInput");
-const prompter = document.getElementById("prompter");
-const display = document.getElementById("scriptDisplay");
-const playButton = document.getElementById("playButton");
+
+/* -----------------------------
+   BROWSER SPEECH RECOGNITION
+----------------------------- */
+
+const SpeechRecognition =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+if (SpeechRecognition) {
+
+    recognition = new SpeechRecognition();
+
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = "en-US";
+
+    recognition.onstart = function() {
+
+        listening = true;
+
+        updateVoiceStatus(
+            "Listening...",
+            true
+        );
+    };
+
+    recognition.onend = function() {
+
+        if (listening) {
+
+            try {
+                recognition.start();
+            } catch (error) {
+                console.log(error);
+            }
+
+        } else {
+
+            updateVoiceStatus(
+                "Microphone off",
+                false
+            );
+        }
+    };
+
+    recognition.onerror = function(event) {
+
+        console.log(
+            "Speech recognition error:",
+            event.error
+        );
+
+        if (
+            event.error === "not-allowed" ||
+            event.error === "service-not-allowed"
+        ) {
+
+            listening = false;
+
+            updateVoiceStatus(
+                "Microphone permission denied",
+                false
+            );
+
+        } else if (event.error === "no-speech") {
+
+            updateVoiceStatus(
+                "Listening...",
+                true
+            );
+        }
+    };
+
+    recognition.onresult = function(event) {
+
+        let transcript = "";
+
+        for (
+            let i = event.resultIndex;
+            i < event.results.length;
+            i++
+        ) {
+
+            transcript +=
+                event.results[i][0].transcript + " ";
+        }
+
+        processSpeech(transcript);
+    };
+
+} else {
+
+    document.getElementById("status").textContent =
+        "Voice tracking is not supported by this browser. Try Chrome on Android or Safari on iPhone.";
+}
+
+
+/* -----------------------------
+   START PROMPTER
+----------------------------- */
 
 function startPrompter() {
-    const text = input.value.trim();
+
+    const text =
+        document.getElementById("scriptInput")
+        .value
+        .trim();
 
     if (!text) {
-        alert("Please enter a script first.");
+
+        alert(
+            "Please enter a script first."
+        );
+
         return;
     }
 
-    display.textContent = text;
+    createScript(text);
+
+    document
+        .getElementById("prompterScreen")
+        .classList.add("active");
+
+    currentWord = 0;
     scrollPosition = 0;
-    display.style.transform = "translateY(0)";
-    prompter.classList.add("active");
 
-    scrolling = false;
-    playButton.textContent = "▶ Start";
+    updateScriptPosition();
 
-    if (document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen().catch(() => {});
+    if (
+        document.documentElement.requestFullscreen
+    ) {
+
+        document.documentElement
+            .requestFullscreen()
+            .catch(() => {});
+    }
+
+    updateVoiceStatus(
+        "Microphone off",
+        false
+    );
+}
+
+
+/* -----------------------------
+   CREATE WORD-BY-WORD SCRIPT
+----------------------------- */
+
+function createScript(text) {
+
+    const display =
+        document.getElementById("scriptDisplay");
+
+    display.innerHTML = "";
+
+    const parts =
+        text.split(/(\s+)/);
+
+    words = [];
+
+    parts.forEach(part => {
+
+        if (part.trim() === "") {
+
+            display.appendChild(
+                document.createTextNode(part)
+            );
+
+            return;
+        }
+
+        const span =
+            document.createElement("span");
+
+        span.className = "word";
+        span.textContent = part;
+
+        display.appendChild(span);
+
+        words.push(span);
+    });
+}
+
+
+/* -----------------------------
+   VOICE TRACKING
+----------------------------- */
+
+function startVoiceTracking() {
+
+    if (!recognition) {
+
+        alert(
+            "Voice recognition is not supported by this browser."
+        );
+
+        return;
+    }
+
+    if (listening) {
+
+        stopVoiceTracking();
+
+        return;
+    }
+
+    try {
+
+        listening = true;
+
+        recognition.start();
+
+        updateVoiceStatus(
+            "Starting microphone...",
+            true
+        );
+
+    } catch (error) {
+
+        console.log(error);
     }
 }
 
-function closePrompter() {
-    scrolling = false;
 
-    if (animationFrame) {
-        cancelAnimationFrame(animationFrame);
-        animationFrame = null;
+function stopVoiceTracking() {
+
+    listening = false;
+
+    if (recognition) {
+
+        try {
+            recognition.stop();
+        } catch (error) {
+            console.log(error);
+        }
     }
 
-    prompter.classList.remove("active");
+    updateVoiceStatus(
+        "Microphone off",
+        false
+    );
+}
 
-    if (document.exitFullscreen && document.fullscreenElement) {
-        document.exitFullscreen().catch(() => {});
+
+/* -----------------------------
+   MATCH SPOKEN WORDS
+----------------------------- */
+
+function processSpeech(transcript) {
+
+    if (!listening || words.length === 0) {
+        return;
+    }
+
+    const spoken =
+        normalizeText(transcript)
+        .split(/\s+/)
+        .filter(Boolean);
+
+    if (spoken.length === 0) {
+        return;
+    }
+
+    let searchIndex = currentWord;
+
+    for (
+        let i = 0;
+        i < spoken.length;
+        i++
+    ) {
+
+        const spokenWord =
+            spoken[i];
+
+        let found = -1;
+
+        const searchLimit =
+            Math.min(
+                searchIndex + 12,
+                words.length
+            );
+
+        for (
+            let j = searchIndex;
+            j < searchLimit;
+            j++
+        ) {
+
+            const scriptWord =
+                normalizeText(
+                    words[j].textContent
+                );
+
+            if (
+                scriptWord === spokenWord ||
+                wordsAreSimilar(
+                    scriptWord,
+                    spokenWord
+                )
+            ) {
+
+                found = j;
+                break;
+            }
+        }
+
+        if (found !== -1) {
+
+            currentWord = found + 1;
+            searchIndex = currentWord;
+
+            updateScriptPosition();
+        }
+    }
+
+    if (currentWord >= words.length) {
+
+        stopVoiceTracking();
+
+        updateVoiceStatus(
+            "Script complete",
+            false
+        );
     }
 }
+
+
+/* -----------------------------
+   WORD COMPARISON
+----------------------------- */
+
+function normalizeText(text) {
+
+    return text
+        .toLowerCase()
+        .replace(/[.,!?;:"'()[\]{}]/g, "")
+        .replace(/[^a-z0-9']/g, "")
+        .trim();
+}
+
+
+function wordsAreSimilar(a, b) {
+
+    if (!a || !b) {
+        return false;
+    }
+
+    if (a === b) {
+        return true;
+    }
+
+    if (
+        a.length > 4 &&
+        b.length > 4
+    ) {
+
+        if (
+            a.startsWith(b) ||
+            b.startsWith(a)
+        ) {
+
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
+/* -----------------------------
+   MOVE SCRIPT TO CURRENT WORD
+----------------------------- */
+
+function updateScriptPosition() {
+
+    if (words.length === 0) {
+        return;
+    }
+
+    words.forEach(
+        (word, index) => {
+
+            word.classList.remove("active");
+            word.classList.remove("done");
+
+            if (
+                index < currentWord - 1
+            ) {
+
+                word.classList.add("done");
+
+            } else if (
+                index === currentWord - 1
+            ) {
+
+                word.classList.add("active");
+            }
+        }
+    );
+
+    const activeWord =
+        words[
+            Math.min(
+                Math.max(currentWord - 1, 0),
+                words.length - 1
+            )
+        ];
+
+    if (!activeWord) {
+        return;
+    }
+
+    const windowElement =
+        document.getElementById(
+            "scriptWindow"
+        );
+
+    const windowCenter =
+        windowElement.clientHeight / 2;
+
+    const wordTop =
+        activeWord.offsetTop;
+
+    const target =
+        wordTop - windowCenter;
+
+    scrollPosition =
+        Math.max(0, target);
+
+    document.getElementById(
+        "scriptDisplay"
+    ).style.transform =
+        `translateY(-${scrollPosition}px)`;
+}
+
+
+/* -----------------------------
+   TEST MICROPHONE
+----------------------------- */
+
+function testMicrophone() {
+
+    if (!recognition) {
+
+        alert(
+            "This browser does not support voice recognition. Try Chrome on Android or Safari on iPhone."
+        );
+
+        return;
+    }
+
+    alert(
+        "The browser will ask for microphone permission. Allow it, then speak normally."
+    );
+
+    try {
+
+        listening = true;
+        recognition.start();
+
+    } catch (error) {
+
+        console.log(error);
+    }
+}
+
+
+/* -----------------------------
+   VOICE STATUS
+----------------------------- */
+
+function updateVoiceStatus(
+    message,
+    active
+) {
+
+    const status =
+        document.getElementById(
+            "voiceStatus"
+        );
+
+    status.textContent = message;
+
+    if (active) {
+
+        status.classList.add(
+            "listening"
+        );
+
+    } else {
+
+        status.classList.remove(
+            "listening"
+        );
+    }
+
+    document.getElementById(
+        "status"
+    ).textContent = message;
+}
+
+
+/* -----------------------------
+   MANUAL SCROLL
+----------------------------- */
 
 function toggleScroll() {
+
     scrolling = !scrolling;
 
+    const button =
+        document.getElementById(
+            "playButton"
+        );
+
     if (scrolling) {
-        playButton.textContent = "⏸ Pause";
+
+        button.textContent =
+            "⏸ Pause";
+
         animateScroll();
+
     } else {
-        playButton.textContent = "▶ Start";
+
+        button.textContent =
+            "▶ Scroll";
 
         if (animationFrame) {
-            cancelAnimationFrame(animationFrame);
+
+            cancelAnimationFrame(
+                animationFrame
+            );
+
             animationFrame = null;
         }
     }
 }
 
+
 function animateScroll() {
+
     if (!scrolling) {
         return;
     }
 
-    scrollPosition += speed * 0.35;
-    display.style.transform = `translateY(-${scrollPosition}px)`;
+    scrollPosition +=
+        speed * 0.35;
 
-    animationFrame = requestAnimationFrame(animateScroll);
+    document.getElementById(
+        "scriptDisplay"
+    ).style.transform =
+        `translateY(-${scrollPosition}px)`;
+
+    animationFrame =
+        requestAnimationFrame(
+            animateScroll
+        );
 }
+
+
+/* -----------------------------
+   RESTART
+----------------------------- */
 
 function restartScroll() {
+
+    stopVoiceTracking();
+
+    currentWord = 0;
     scrollPosition = 0;
-    display.style.transform = "translateY(0)";
+
+    scrolling = false;
+
+    document.getElementById(
+        "playButton"
+    ).textContent = "▶ Scroll";
+
+    updateScriptPosition();
 }
+
+
+/* -----------------------------
+   SPEED
+----------------------------- */
 
 function updateSpeed() {
-    speed = Number(document.getElementById("speedSlider").value);
-    document.getElementById("speedValue").textContent = speed;
+
+    speed =
+        Number(
+            document.getElementById(
+                "speedSlider"
+            ).value
+        );
+
+    document.getElementById(
+        "speedValue"
+    ).textContent = speed;
 }
 
+
+/* -----------------------------
+   CLOSE
+----------------------------- */
+
+function closePrompter() {
+
+    stopVoiceTracking();
+
+    scrolling = false;
+
+    if (animationFrame) {
+
+        cancelAnimationFrame(
+            animationFrame
+        );
+
+        animationFrame = null;
+    }
+
+    document
+        .getElementById("prompterScreen")
+        .classList.remove("active");
+
+    if (
+        document.exitFullscreen &&
+        document.fullscreenElement
+    ) {
+
+        document.exitFullscreen()
+            .catch(() => {});
+    }
+}
+
+
+/* -----------------------------
+   CLEAR
+----------------------------- */
+
 function clearScript() {
-    input.value = "";
+
+    document.getElementById(
+        "scriptInput"
+    ).value = "";
 }
 </script>
 
